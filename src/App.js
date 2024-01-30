@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
-//Import images
+import ResultModal from './ResultModal';
 import rock from './images/rock.png';
 import paper from './images/paper.png';
 import scissors from './images/scissors.png';
+import './ResultModal.css'; // Import the modal styles
 
 const App = () => {
   const [userScore, setUserScore] = useState(0);
@@ -12,6 +13,7 @@ const App = () => {
   const [computerChoice, setComputerChoice] = useState('');
   const [error, setError] = useState('');
   const [statement, setStatement] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   const picks = ['rock', 'paper', 'scissors'];
 
@@ -22,21 +24,20 @@ const App = () => {
   };
 
   const calculate = () => {
-    console.log('Player:', userChoice, 'Computer:', computerChoice);
     if (userChoice === computerChoice) {
-      setStatement(`Draw! You both choose ${userChoice}`);
+      setStatement(`Draw`);
     } else if (
       (userChoice === 'paper' && computerChoice === 'rock') ||
       (userChoice === 'rock' && computerChoice === 'scissors') ||
       (userChoice === 'scissors' && computerChoice === 'paper')
     ) {
       setStatement(
-        `You Won!\n You choose: ${userChoice} & computer choose: ${computerChoice}`
+        `You Won!`
       );
       setUserScore((prev) => prev + 1);
     } else {
       setStatement(
-        `You lose!\n You choose: ${userChoice} & computer choose: ${computerChoice}`
+        `You Lose!`
       );
       setComputerScore((prev) => prev + 1);
     }
@@ -48,37 +49,46 @@ const App = () => {
     setError('');
 
     if (userChoice === '') {
-      return setError("You've not picked Rock, Paper or Scissors ");
+      return setError("You've not picked Rock, Paper, or Scissors ");
     }
     computerPick();
     calculate();
+    setModalOpen(true); // Open the modal after calculating results
   };
 
   const onReset = () => {
     setComputerScore(0);
     setUserScore(0);
+    userChoice("")
     setError('');
     setStatement('');
   };
 
   return (
-    <div>
+    <div className='main'>
       <h1>Rock, Paper, Scissors</h1>
-      <h3>User: {userScore}</h3>
+      <h3>Your score: {userScore}</h3>
       <h3>Computer: {computerScore}</h3>
+      {error ?
+        <div className="error">
+        <p>{error}</p>
+      </div>:""}
       <form onSubmit={onRPSSubmit}>
         <div className="rps">
-          <div className="rock card" onClick={(e) => setUserChoice('rock')}>
+          <div className="rock card" onClick={() => setUserChoice('rock')}>
             <img src={rock} alt="rock" />
+            <h4>Rock</h4>
           </div>
-          <div className="paper card" onClick={(e) => setUserChoice('paper')}>
+          <div className="paper card" onClick={() => setUserChoice('paper')}>
             <img src={paper} alt="paper" />
+            <h4>Paper</h4>
           </div>
           <div
             className="scissors card"
-            onClick={(e) => setUserChoice('scissors')}
+            onClick={() => setUserChoice('scissors')}
           >
             <img src={scissors} alt="scissors" />
+            <h4>Scissors</h4>
           </div>
         </div>
         <div className="buttons">
@@ -87,9 +97,18 @@ const App = () => {
             Reset
           </button>
         </div>
-        <p>{statement}</p>
-        <p>{error}</p>
       </form>
+
+      {modalOpen && (
+        <ResultModal
+          userScore={userScore}
+          computerScore={computerScore}
+          statement={statement}
+          computerChoice={computerChoice}
+          userChoice={userChoice}
+          onClose={() => {setUserChoice(""); setModalOpen(false)}}
+        />
+      )}
     </div>
   );
 };
