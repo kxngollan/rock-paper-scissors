@@ -51,7 +51,7 @@ const App = () => {
     }
 
     const computer = computerPick();
-    setComputerChoice(computer); // Ensure we update the computer choice state
+    setComputerChoice(computer);
     calculate(userChoice, computer);
     setModalOpen(true);
   };
@@ -59,7 +59,7 @@ const App = () => {
   const onReset = () => {
     setComputerScore(0);
     setUserScore(0);
-    setUserChoice(""); // Correct the function call
+    setUserChoice("");
     setError("");
     setStatement("");
   };
